@@ -23,6 +23,9 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 public class Robot extends IterativeRobot {
 	private DifferentialDrive m_robotDrive
 			= new DifferentialDrive(new Spark(0), new Spark(1));
+	Spark intake = new Spark(2)
+	
+
 	private Joystick m_stick = new Joystick(0);
 	private Timer m_timer = new Timer();
 
@@ -48,13 +51,20 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		// Drive for 2 seconds
-		if (m_timer.get() < 2.0) {
-			m_robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
-		} else {
-			m_robotDrive.stopMotor(); // stop robot
+		// Drive for a few seconds
+		if (m_timer.get() < 5.0) {
+			m_robotDrive.arcadeDrive(0.5, 0.0); // drive forwards 1/2 speed
 		}
+		if (m_timer.get() > 5.0) {
+			m_robotDrive.arcadeDrive(0.0, 0.0); // drive forwards 0 speed
+			intake.set(-0.4);// release cube at 2/5  speed
+			
+		} 
+		else if (m_timer.get() > 6.0) {
+			intake.set(0.0);// release cube at 0 speed
+		
 	}
+	
 
 	/**
 	 * This function is called once each time the robot enters teleoperated mode.
