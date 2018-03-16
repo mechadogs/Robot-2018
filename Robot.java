@@ -25,20 +25,26 @@ public class Robot extends IterativeRobot {
 			= new DifferentialDrive(new Spark(0), new Spark(1));
 	private Joystick m_stick = new Joystick(0);
 	private Timer m_timer = new Timer();
-
+        SendableChooser chooser; 
+	int mode = 1;
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
-	public void robotInit() {
+	public void robotInit() { 
+	chooser = new SendableChooser();
+	chooser.addDefault("Auto 1", 1);
+	SmartDashboard.putData("Autonomous Selector: ", chooser);
+	
 	}
 
 	/**
 	 * This function is run once each time the robot enters autonomous mode.
 	 */
 	@Override
-	public void autonomousInit() {
+	public void autonomousInit() { 
+		mode = (int) chooser.getSelected;
 		m_timer.reset();
 		m_timer.start();
 	}
@@ -48,12 +54,16 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		// Drive for 2 seconds
-		if (m_timer.get() < 2.0) {
-			m_robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
-		} else {
-			m_robotDrive.stopMotor(); // stop robot
-		}
+		// Drive for 2 seconds 	
+	//** if (m_timer.get() < 2.0) {
+        //robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
+	 {
+	//robotDrive.stopMotor(); // stop robot 
+        switch (mode) { 
+		case 1: 
+			
+		break;
+	 }
 	}
 
 	/**
