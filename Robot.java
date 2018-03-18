@@ -12,10 +12,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.*;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -23,28 +20,21 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-
 public class Robot extends IterativeRobot {
 	private DifferentialDrive m_robotDrive
 			= new DifferentialDrive(new Spark(0), new Spark(1));
-	Spark intake = new Spark(2);
-	Spark elevator = new Spark(3);
 	private Joystick m_stick = new Joystick(0);
 	private Timer m_timer = new Timer();
-	SendableChooser<String> chooser; 
-	AnalogInput ultra;
-	AnalogGyro gyro;
+        SendableChooser chooser; 
 	int mode = 1;
-	double kp, angle, timer, distance;
-	
-  /**
+	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
 	public void robotInit() { 
-	chooser = new SendableChooser<>();
-    chooser.addDefault("Auto 1", "mode");
+	chooser = new SendableChooser();
+	chooser.addDefault("Auto 1", 1);
 	SmartDashboard.putData("Autonomous Selector: ", chooser);
 	
 	}
@@ -53,58 +43,17 @@ public class Robot extends IterativeRobot {
 	 * This function is run once each time the robot enters autonomous mode.
 	 */
 	@Override
-	public void autonomousInit() {
-		mode = (int) chooser.getSelected(); // this
+	public void autonomousInit() { 
+		mode = (int) chooser.getSelected;
 		m_timer.reset();
 		m_timer.start();
-    ultra = new AnalogInput(0);
-    gyro = new AnalogGyro(1);
-    angle = gyro.getAngle();
-    timer = m_timer.get();
-    distance = ultra.getAverageVoltage();
-    kp = 0.003;
-  
-  }
+	}
 
 	/**
 	 * This function is called periodically during autonomous.
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		if (distance <= 600) {
-		m_robotDrive.arcadeDrive(-0.5, -angle * kp);
-		}
-		   else if (distance <  && distance) {
-			m_robotDrive.arcadeDrive(0.0, -angle * kp);
-			intake.set(-0.4);// release cube at 2/5  speed
-			m_timer.reset();
-			m_timer.start();
-			}
-		   else if ((m_timer.get() > 0.1)){
-		   intake.set(0.0);// release cube at 2/5  speed
-		   m_robotDrive.arcadeDrive(0, 1080);
-			}
-		
-		
-		
-		
-		
-		// REVISE
-		// Drive for a few seconds
-		if (timer < 5.0) {
-			m_robotDrive.arcadeDrive(-0.5, -angle * kp); // drive forwards 1/2 speed
-		}
-		if (timer > 5.0) {
-			m_robotDrive.arcadeDrive(0.0, 0.0); // drive forwards 0 speed
-			intake.set(-0.4);// release cube at 2/5  speed
-			
-		} 
-		else if (timer > 6.0) {
-			intake.set(0.0);// release cube at 0 speed
-		
-
-			
-			
 		// Drive for 2 seconds 	
 	//** if (m_timer.get() < 2.0) {
         //robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
@@ -112,12 +61,10 @@ public class Robot extends IterativeRobot {
 	//robotDrive.stopMotor(); // stop robot 
         switch (mode) { 
 		case 1: 
-// auton			
+			
 		break;
-	 
-
+	 }
 	}
-	
 
 	/**
 	 * This function is called once each time the robot enters teleoperated mode.
@@ -141,5 +88,14 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 	}
 	
-	
+	//hi
 }
+	pblic class Robot exteds Robot {
+		AnalogSensor ultra = new AnalogSenor(0);
+		
+		public void robotInit(){
+		ultra.setAutomaticMode(true);
+	}
+	pulic void analogSensor() {
+		double rage = ultra.getRangeInches();
+	}
