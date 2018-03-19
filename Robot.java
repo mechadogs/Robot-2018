@@ -27,111 +27,101 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 public class Robot extends IterativeRobot {
 	private DifferentialDrive m_robotDrive
 			= new DifferentialDrive(new Spark(0), new Spark(1));
-	Spark intake = new Spark(2);
-	Spark elevator = new Spark(3);
+	Spark intake = new Spark(3);
+	Spark elevator = new Spark(2);
 	private Joystick m_stick = new Joystick(0);
 	private Timer m_timer = new Timer();
-	SendableChooser<String> chooser; 
+	private Timer d_timer = new Timer();
+	SendableChooser<int> chooser;
 	AnalogInput ultra;
 	AnalogGyro gyro;
 	int mode = 1;
 	double kp, angle, timer, distance;
 	
-  /**
-	 * This function is run when the robot is first started up and should be
-	 * used for any initialization code.
-	 */
+  	
+	
 	@Override
 	public void robotInit() { 
-	chooser = new SendableChooser<>();
-    chooser.addDefault("Auto 1", "mode");
-	SmartDashboard.putData("Autonomous Selector: ", chooser);
+		chooser = new SendableChooser<int>();
+    		chooser.addDefault("DR Straight line", 1);
+		chooser.addXXXXX("SB Simple Switch', 2);
+		
+		SmartDashboard.putData("Autonomous Selector:", chooser);
 	
 	}
 
-	/**
-	 * This function is run once each time the robot enters autonomous mode.
-	 */
+	
 	@Override
 	public void autonomousInit() {
+		
 		mode = (int) chooser.getSelected(); // this
 		m_timer.reset();
-		m_timer.start();
-    ultra = new AnalogInput(0);
-    gyro = new AnalogGyro(1);
-    angle = gyro.getAngle();
-    timer = m_timer.get();
-    distance = ultra.getAverageVoltage();
-    kp = 0.003;
+		d_timer.reset();
+    		ultra = new AnalogInput(0);
+    		gyro = new AnalogGyro(1);
+    		kp = 0.003;
   
-  }
+ 	}
 
-	/**
-	 * This function is called periodically during autonomous.
-	 */
 	@Override
 	public void autonomousPeriodic() {
-		if (distance <= 600) {
-		m_robotDrive.arcadeDrive(-0.5, -angle * kp);
-		}
-		   else if (distance <  && distance) {
-			m_robotDrive.arcadeDrive(0.0, -angle * kp);
-			intake.set(-0.4);// release cube at 2/5  speed
-			m_timer.reset();
-			m_timer.start();
-			}
-		   else if ((m_timer.get() > 0.1)){
-		   intake.set(0.0);// release cube at 2/5  speed
-		   m_robotDrive.arcadeDrive(0, 1080);
-			}
-		
-		
-		
-		
-		
-		// REVISE
-		// Drive for a few seconds
-		if (timer < 5.0) {
-			m_robotDrive.arcadeDrive(-0.5, -angle * kp); // drive forwards 1/2 speed
-		}
-		if (timer > 5.0) {
-			m_robotDrive.arcadeDrive(0.0, 0.0); // drive forwards 0 speed
-			intake.set(-0.4);// release cube at 2/5  speed
-			
-		} 
-		else if (timer > 6.0) {
-			intake.set(0.0);// release cube at 0 speed
-		
 
-			
-			
-		// Drive for 2 seconds 	
-	//** if (m_timer.get() < 2.0) {
-        //robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
-	 {
-	//robotDrive.stopMotor(); // stop robot 
-        switch (mode) { 
+		angle = gyro.getAngle();
+    		timer = m_timer.get();
+		dtimer = d_timer.get();
+    		distance = ultra.getAverageValue();
+		
+		
+	switch (mode) { 
+		
 		case 1: 
-// auton			
+			if (distance > 600) {
+				m_robotDrive.arcadeDrive(-0.5, -angle * kp);
+				d_timer.reset();
+				d_timer.start();
+			}
+			
+			else if (distance < 600 && dtimer > 2 && timer < 2) {
+				m_robotDrive.arcadeDrive(0.0, 0);
+				intake.set(-0.4);// release cube at 2/5  speed
+				m_timer.start();
+			}
+			
+		   	else if (timer > 1)){
+		   		intake.set(0.0);// release cube at 2/5  speed
+		   		m_robotDrive.arcadeDrive(0, 0);
+			}		
+		break;
+			
+		case 2:
+			if (timer < 5.0) {
+				m_robotDrive.arcadeDrive(-0.5, -angle * kp); // drive forwards 1/2 speed
+			}
+			else if (timer > 5.0 && timer < 6) {
+				m_robotDrive.arcadeDrive(0.0, 0.0); // drive forwards 0 speed
+				intake.set(-0.4);// release cube at 2/5  speed
+			
+			} 
+			else {
+				intake.set(0.0);// release cube at 0 speed
+				m_robotDrive.arcadeDrive(0,0)
+			}
 		break;
 	 
 
 	}
 	
 
-	/**
-	 * This function is called once each time the robot enters teleoperated mode.
-	 */
 	@Override
 	public void teleopInit() {
 	}
 
-	/**
-	 * This function is called periodically during teleoperated mode.
-	 */
+	
 	@Override
 	public void teleopPeriodic() {
-		m_robotDrive.curvatureDrive(m_stick.getRawAxis(1), m_stick.getRawAxis(4), m_stick.getRawButton(5) );
+		
+		m_robotDrive.curvatureDrive(m_stick.getRawAxis(1), m_stick.getRawAxis(4), m_stick.getRawButton(5));
+	
 	}
 
 	/**
@@ -143,12 +133,5 @@ public class Robot extends IterativeRobot {
 	
 	
 }
-	pblic class Robot exteds Robot {
-		AnalogSensor ultra = new AnalogSenor(0);
-		
-		public void robotInit(){
-		ultra.setAutomaticMode(true);
-	}
-	pulic void analogSensor() {
-		double rage = ultra.getRangeInches();
+	
 	}
