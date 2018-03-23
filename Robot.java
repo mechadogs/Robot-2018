@@ -35,6 +35,7 @@ public class Robot extends IterativeRobot {
 	SendableChooser<int> chooser;
 	AnalogInput ultra;
 	AnalogGyro gyro;
+	
 	int mode = 1;
 	double kp, angle, timer, distance;
 	
@@ -42,10 +43,11 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void robotInit() { 
+		
 		chooser = new SendableChooser<int>();
+		
     		chooser.addDefault("DR Straight line", 1);
 		chooser.addXXXXX("SB Simple Switch', 2);
-		
 		SmartDashboard.putData("Autonomous Selector:", chooser);
 	
 	}
@@ -54,13 +56,13 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		
-		mode = (int) chooser.getSelected(); // this
-		m_timer.reset();
-		d_timer.reset();
+		mode = (int) chooser.getSelected(); 
     		ultra = new AnalogInput(0);
     		gyro = new AnalogGyro(1);
     		kp = 0.003;
-  
+		
+		m_timer.reset();
+		d_timer.reset();
  	}
 
 	@Override
@@ -82,7 +84,7 @@ public class Robot extends IterativeRobot {
 			}
 			
 			else if (distance < 600 && dtimer > 2 && timer < 2) {
-				m_robotDrive.arcadeDrive(0.0, 0);
+				m_robotDrive.arcadeDrive(0.0, 0.0);
 				intake.set(-0.4);// release cube at 2/5  speed
 				m_timer.start();
 			}
@@ -98,12 +100,12 @@ public class Robot extends IterativeRobot {
 				m_robotDrive.arcadeDrive(-0.5, -angle * kp); // drive forwards 1/2 speed
 			}
 			else if (timer > 5.0 && timer < 6) {
-				m_robotDrive.arcadeDrive(0.0, 0.0); // drive forwards 0 speed
-				intake.set(-0.4);// release cube at 2/5  speed
+				m_robotDrive.arcadeDrive(0.0, 0.0); // stop
+				intake.set(-0.4); // release cube at 2/5  speed
 			
 			} 
 			else {
-				intake.set(0.0);// release cube at 0 speed
+				intake.set(0.0);// stop intake
 				m_robotDrive.arcadeDrive(0,0)
 			}
 		break;
@@ -120,7 +122,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		
-		m_robotDrive.curvatureDrive(m_stick.getRawAxis(1), m_stick.getRawAxis(4), m_stick.getRawButton(5));
+	m_robotDrive.curvatureDrive(m_stick.getRawAxis(1), m_stick.getRawAxis(4), m_stick.getRawButton(5));
 	
 	}
 
