@@ -27,101 +27,116 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 public class Robot extends IterativeRobot {
 	private DifferentialDrive m_robotDrive
 			= new DifferentialDrive(new Spark(0), new Spark(1));
-	Spark intake = new Spark(3);
-	Spark elevator = new Spark(2);
+	Spark intake = new Spark(2);
+	Spark elevator = new Spark(3);
 	private Joystick m_stick = new Joystick(0);
 	private Timer m_timer = new Timer();
-	private Timer d_timer = new Timer();
-	SendableChooser<int> chooser;
+	SendableChooser<String> chooser; 
 	AnalogInput ultra;
 	AnalogGyro gyro;
 	int mode = 1;
 	double kp, angle, timer, distance;
+         boolean schwifty, team_umizoomi
 	
-  	
-	
+  /**
+	 * This function is run when the robot is first started up and should be
+	 * used for any initialization code.
+	 */
 	@Override
 	public void robotInit() { 
-		chooser = new SendableChooser<int>();
-    		chooser.addDefault("DR Straight line", 1);
-		chooser.addXXXXX("SB Simple Switch', 2);
-		
-		SmartDashboard.putData("Autonomous Selector:", chooser);
+	chooser = new SendableChooser<>();
+    chooser.addDefault("Auto 1", "mode");
+	SmartDashboard.putData("Autonomous Selector: ", chooser);
 	
 	}
 
-	
+	/**
+	 * This function is run once each time the robot enters autonomous mode.
+	 */
 	@Override
 	public void autonomousInit() {
-		
 		mode = (int) chooser.getSelected(); // this
 		m_timer.reset();
-		d_timer.reset();
-    		ultra = new AnalogInput(0);
-    		gyro = new AnalogGyro(1);
-    		kp = 0.003;
+		m_timer.start();
+    ultra = new AnalogInput(0);
+    gyro = new AnalogGyro(1);
+    angle = gyro.getAngle();
+    timer = m_timer.get();
+    distance = ultra.getAverageVoltage();
+    kp = 0.003;
   
- 	}
+  }
 
+	/**
+	 * This function is called periodically during autonomous.
+	 */
 	@Override
 	public void autonomousPeriodic() {
+		if (distance >10) {
+		m_robotDrive.arcadeDrive(-0.5, -angle * kp);
+		}
+		   else if (distance <  10 && distance > 0) {
+			m_robotDrive.arcadeDrive(0.0, -angle * kp);
+			intake.set(-0.4);// release cube at 2/5  speed
+			m_timer.reset();
+			m_timer.start();
+			}
+		   else if ((m_timer.get() > 0.1)){
+		   intake.set(0.0);// set intake to 0
+                	m_timer.reset();
+	         m_timer.start();
+                else if (m_timer.get() > 0.1 && m_timer.get() < 0.3) {
+                m_robotDrive.arcadeDrive(-1,0)
+                else if (m_timer.get() > 0.3) {
+		   m_robotDrive.arcadeDrive(0, 5400);
+			}
+		}
+}
+		
+		
+		
+		
+		// REVISE
+		// Drive for a few seconds
+		if (if m_timer.get < 5.0) {
+			m_robotDrive.arcadeDrive(-0.5, -angle * kp); // drive forwards 1/2 speed
+		}
+		if (m_timer.get > 5.0 && m_timer.get() < 6.0) {
+			m_robotDrive.arcadeDrive(0.0, 0.0); // drive forwards 0 speed
+			intake.set(-0.4);// release cube at 2/5  speed
+			
+		} 
+		else if (m_timer.get() > 6.0) {
+			intake.set(0.0);// release cube at 0 speed
+		
 
-		angle = gyro.getAngle();
-    		timer = m_timer.get();
-		dtimer = d_timer.get();
-    		distance = ultra.getAverageValue();
-		
-		
-	switch (mode) { 
-		
+			
+			
+		// Drive for 2 seconds 	
+	//** if (m_timer.get() < 2.0) {
+        //robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
+	 {
+	//robotDrive.stopMotor(); // stop robot 
+        switch (mode) { 
 		case 1: 
-			if (distance > 600) {
-				m_robotDrive.arcadeDrive(-0.5, -angle * kp);
-				d_timer.reset();
-				d_timer.start();
-			}
-			
-			else if (distance < 600 && dtimer > 2 && timer < 2) {
-				m_robotDrive.arcadeDrive(0.0, 0);
-				intake.set(-0.4);// release cube at 2/5  speed
-				m_timer.start();
-			}
-			
-		   	else if (timer > 1)){
-		   		intake.set(0.0);// release cube at 2/5  speed
-		   		m_robotDrive.arcadeDrive(0, 0);
-			}		
+// auton			
 		break;
-			
-		case 2:
-			if (timer < 5.0) {
-				m_robotDrive.arcadeDrive(-0.5, -angle * kp); // drive forwards 1/2 speed
-			}
-			else if (timer > 5.0 && timer < 6) {
-				m_robotDrive.arcadeDrive(0.0, 0.0); // drive forwards 0 speed
-				intake.set(-0.4);// release cube at 2/5  speed
-			
-			} 
-			else {
-				intake.set(0.0);// release cube at 0 speed
-				m_robotDrive.arcadeDrive(0,0)
-			}
-		break;
-	 
 
 	}
-	
 
+	/**
+	 * This function is called once each time the robot enters teleoperated mode.
+	 */
 	@Override
 	public void teleopInit() {
 	}
 
-	
+	/**
+	 * This function is called periodically during teleoperated mode.
+	 */
 	@Override
 	public void teleopPeriodic() {
-		
-		m_robotDrive.curvatureDrive(m_stick.getRawAxis(1), m_stick.getRawAxis(4), m_stick.getRawButton(5));
-	
+		m_robotDrive.curvatureDrive(m_stick.getRawAxis(1), m_stick.getRawAxis(4), m_stick.getRawButton(5) );
 	}
 
 	/**
@@ -133,5 +148,3 @@ public class Robot extends IterativeRobot {
 	
 	
 }
-	
-	}
