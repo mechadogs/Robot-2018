@@ -30,12 +30,14 @@ public class Robot extends IterativeRobot {
 	Spark intake = new Spark(2);
 	Spark elevator = new Spark(3);
 	private Joystick m_stick = new Joystick(0);
-	private Timer m_timer = new Timer();
-	SendableChooser<String> chooser; 
+	private Timer m_timer = new Timer(); 
+	private Timer d_timer = new Timer();
+	
+	SendableChooser<int> chooser; 
 	AnalogInput ultra;
 	AnalogGyro gyro;
 	int mode = 1;
-	double kp, angle, timer, distance;
+	double kp, angle, timer, distance, dtimer;
 	
   /**
 	 * This function is run when the robot is first started up and should be
@@ -43,9 +45,11 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() { 
-	chooser = new SendableChooser<>();
-    chooser.addDefault("Auto 1", "mode");
-	SmartDashboard.putData("Autonomous Selector: ", chooser);
+	chooser = new SendableChooser<int>();
+    	chooser.addDefault("DR Straight line", 1);
+	chooser.addXXXXX("SB Simple Switch", 2);
+		
+	SmartDashboard.putData("Autonomous Selector:", chooser);
 	
 	}
 
@@ -55,14 +59,16 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		mode = (int) chooser.getSelected(); // this
-		m_timer.reset();
-		m_timer.start();
-    ultra = new AnalogInput(0);
-    gyro = new AnalogGyro(1);
-    angle = gyro.getAngle();
-    timer = m_timer.get();
-    distance = ultra.getAverageVoltage();
-    kp = 0.003;
+		m_timer.reset(); 
+		d_timer.start();
+                ultra = new AnalogInput(0);
+		gyro = new AnalogGyro(1);
+		angle = gyro.getAngle();
+		timer = m_timer.get();
+		distance = ultra.getAverageValue();
+		kp = 0.003;
+	
+	   
   
   }
 
@@ -71,50 +77,55 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		if (distance <= 600) {
-		m_robotDrive.arcadeDrive(-0.5, -angle * kp);
-		}
-		   else if (distance <  && distance) {
-			m_robotDrive.arcadeDrive(0.0, -angle * kp);
-			intake.set(-0.4);// release cube at 2/5  speed
-			m_timer.reset();
-			m_timer.start();
-			}
-		   else if ((m_timer.get() > 0.1)){
-		   intake.set(0.0);// release cube at 2/5  speed
-		   m_robotDrive.arcadeDrive(0, 1080);
-			}
 		
-		
-		
-		
-		
-		// REVISE
-		// Drive for a few seconds
-		if (timer < 5.0) {
-			m_robotDrive.arcadeDrive(-0.5, -angle * kp); // drive forwards 1/2 speed
-		}
-		if (timer > 5.0) {
-			m_robotDrive.arcadeDrive(0.0, 0.0); // drive forwards 0 speed
-			intake.set(-0.4);// release cube at 2/5  speed
-			
-		} 
-		else if (timer > 6.0) {
-			intake.set(0.0);// release cube at 0 speed
-		
-
-			
-			
-		// Drive for 2 seconds 	
-	//** if (m_timer.get() < 2.0) {
-        //robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
-	 {
-	//robotDrive.stopMotor(); // stop robot 
-        switch (mode) { 
 		case 1: 
-// auton			
+                        if (distance > 600) {
+				m_robotDrive.arcadeDrive(-0.5, -angle * kp);
+				d_timer.reset();
+				d_timer.start();
+			}
+			
+			else if (distance < 600 && dtimer > 2 && timer < 2) {
+				m_robotDrive.arcadeDrive(0.0, 0);
+				intake.set(-0.4);// release cube at 2/5  speed
+				m_timer.start();
+			}
+			
+		   	else if (timer > 1)){
+		   		intake.set(0.0);// release cube at 2/5  speed
+		   		m_robotDrive.arcadeDrive(0, 0);
+			}		
 		break;
+			
+		case 2:
+			if (timer < 5.0) {
+				m_robotDrive.arcadeDrive(-0.5, -angle * kp); // drive forwards 1/2 speed
+			}
+			else if (timer > 5.0 && timer < 6) {
+				m_robotDrive.arcadeDrive(0.0, 0.0); // drive forwards 0 speed
+				intake.set(-0.4);// release cube at 2/5  speed
+			
+			} 
+			else {
+				intake.set(0.0);// release cube at 0 speed
+			}
+		break; 
 	 
+	       case 3:
+			if (distance > 600) {       
+				m_robotDrive.arcadeDrive(-0.5, -angle * kp);
+		}       
+			else if (distance < 600) {     
+				m_robotDrive.arcadeDrive(0.0, -angle * kp);    
+				intake.set(-0.4);// release cube at 2/5  speed. 
+				m_timer.reset(); 
+				m_timer.start();
+			}
+			else if (timer > 1){
+				intake.set(0.0);// stop intake
+			}
+	        break;
+
 
 	}
 	
