@@ -42,6 +42,7 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void robotInit() { 
+		
 		chooser = new SendableChooser<int>();
     		chooser.addDefault("DR Straight line", 1);
 		chooser.addXXXXX("SB Simple Switch', 2);
@@ -82,7 +83,7 @@ public class Robot extends IterativeRobot {
 			}
 			
 			else if (distance < 600 && dtimer > 2 && timer < 2) {
-				m_robotDrive.arcadeDrive(0.0, 0);
+				m_robotDrive.arcadeDrive(0, 0);
 				intake.set(-0.4);// release cube at 2/5  speed
 				m_timer.start();
 			}
@@ -106,8 +107,22 @@ public class Robot extends IterativeRobot {
 				intake.set(0.0);// release cube at 0 speed
 				m_robotDrive.arcadeDrive(0,0)
 			}
-		break;
-	 
+		break; 
+		
+		case 3:
+			if (distance > 600) {       
+				m_robotDrive.arcadeDrive(-0.5, -angle * kp);
+		}       
+			else if (distance < 600) {     
+				m_robotDrive.arcadeDrive(0.0, -angle * kp);    
+				intake.set(-0.4);// release cube at 2/5  speed. 
+				m_timer.reset(); 
+				m_timer.start();
+			}
+			else if (timer > 1){
+				intake.set(0.0);// stop intake
+			}
+	        break;
 
 	}
 	
